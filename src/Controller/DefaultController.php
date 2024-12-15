@@ -25,8 +25,11 @@ class DefaultController
     {
         try {
             // Perform a basic query to check if the database is accessible
-            $query = $this->entityManager->createQuery("SELECT 1");
-            $result = $query->getResult();
+            $connection = $this->entityManager->getConnection();
+
+            // Execute a lightweight query
+            $sql = 'SELECT 1';
+            $result = $connection->executeQuery($sql)->fetchOne();
 
             if ($result) {
                 $status = 'Database connection is successful!';
