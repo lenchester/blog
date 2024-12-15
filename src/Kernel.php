@@ -22,7 +22,6 @@ use Symfony\Component\HttpKernel\Controller\ControllerResolver;
 class Kernel extends HttpKernel
 {
     private $container;
-    private $logger;
 
     /**
      * @throws \Exception
@@ -31,7 +30,6 @@ class Kernel extends HttpKernel
     {
         $this->loadEnv();
         $this->container = $this->buildContainer();
-
 
         $dispatcher = new EventDispatcher();
 

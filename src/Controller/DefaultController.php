@@ -23,23 +23,6 @@ class DefaultController
 
     public function testConnection(): Response
     {
-        try {
-            // Perform a basic query to check if the database is accessible
-            $connection = $this->entityManager->getConnection();
-
-            // Execute a lightweight query
-            $sql = 'SELECT 1';
-            $result = $connection->executeQuery($sql)->fetchOne();
-
-            if ($result) {
-                $status = 'Database connection is successful!';
-            } else {
-                $status = 'Database connection failed: No result from query.';
-            }
-        } catch (\Exception $e) {
-            $status = 'Database connection failed: ' . $e->getMessage();
-        }
-
-        return new Response($status);
+        return new Response();
     }
 }

@@ -9,9 +9,16 @@ $routes->add('home', new Route('/', [
     '_controller' => [\App\Controller\DefaultController::class, 'index']
 ]));
 
-$routes->add('home', new Route('/db', [
+$routes->add('db', new Route('/db', [
     '_controller' => [\App\Controller\DefaultController::class, 'testConnection']
 ]));
-/*$routes->add('');*/
+
+$routes->add('posts', new Route('/posts', [
+    '_controller' => [\App\Controller\PostController::class, 'getAll']
+], methods: ['GET']));
+
+$routes->add('posts', new Route('/posts', [
+    '_controller' => [\App\Controller\PostController::class, 'create']
+], methods: ['POST']));
 
 return $routes;
