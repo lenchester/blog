@@ -1,0 +1,37 @@
+parameters:
+  kernel.debug: 'dev'
+  test: true
+  db_host: '%env(DB_HOST)%'
+  db_port: '%env(DB_PORT)%'
+  db_name: '%env(DB_DATABASE)%'
+  db_user: '%env(DB_USERNAME)%'
+  db_password: '%env(DB_PASSWORD)%'
+services:
+  # Automatically wire all services in the src/Controller directory
+  App\Controller\:
+    resource: '../src/Controller'
+    public: true
+    autowire: true
+    autoconfigure: true
+
+  # Doctrine EntityManager service
+  # Doctrine Configuration (required for EntityManager)
+  # Doctrine ORM Configuration
+  Doctrine\ORM\Configuration:
+    factory: [ 'Doctrine\ORM\ORMSetup', 'createAttributeMetadataConfiguration' ]
+    arguments:
+      - ['%kernel.project_dir%/src/Entity']  # Path to your entities
+
+  # Doctrine EntityManager
+  Doctrine\ORM\EntityManagerInterface:
+    class: Doctrine\ORM\EntityManager
+    arguments:
+      - '@Doctrine\DBAL\Connection'      # The database connection service
+      - '@Doctrine\ORM\Configuration'    # The ORM configuration service
+
+  # Database Connection (required for Doctrine)
+  Doctrine\DBAL\Connection:
+    factory: [ 'Doctrine\DBAL\DriverManager', 'getConnection' ]
+    arguments:
+      - { driver: pdo_pgsql, host: '%db_host%', port: '%db_port%', dbname: '%db_name%', user: '%db_user%', password: '%db_password%' }
+

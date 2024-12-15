@@ -2,6 +2,13 @@
 
 namespace App;
 
+use Monolog\Logger;
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Symfony\Component\Dotenv\Dotenv;
+use Symfony\Component\HttpKernel\Controller\ArgumentResolver;
+use Symfony\Component\HttpKernel\Controller\ContainerControllerResolver;
 use Symfony\Component\HttpKernel\HttpKernel;
 use Symfony\Component\HttpKernel\EventListener\RouterListener;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -14,8 +21,18 @@ use Symfony\Component\HttpKernel\Controller\ControllerResolver;
 
 class Kernel extends HttpKernel
 {
+    private $container;
+    private $logger;
+
+    /**
+     * @throws \Exception
+     */
     public function __construct(RouteCollection $routes)
     {
+        $this->loadEnv();
+        $this->container = $this->buildContainer();
+
+
         $dispatcher = new EventDispatcher();
 
         $context = new RequestContext();
@@ -26,8 +43,36 @@ class Kernel extends HttpKernel
 
         $dispatcher->addSubscriber(new RouterListener($matcher, $requestStack));
 
-        $controllerResolver = new ControllerResolver();
+        $controllerResolver = new ContainerControllerResolver($this->container);
+        $argumentResolver = new ArgumentResolver();
 
-        parent::__construct($dispatcher, $controllerResolver, $requestStack);
+        try {
+            parent::__construct($dispatcher, $controllerResolver, $requestStack, $argumentResolver);
+        }
+        catch (\Exception $e) {
+            echo $e->getMessage();
+        }
+    }
+
+    /**
+     * @throws \Exception
+     */
+    private function buildContainer(): ContainerBuilder
+    {
+        $container = new ContainerBuilder();
+        $container->setParameter('kernel.project_dir', dirname(__DIR__));
+
+        $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../config'));
+        $loader->load('services.yaml');
+
+        $container->compile(true);
+
+        return $container;
+    }
+
+    private function loadEnv(): void
+    {
+        $dotenv = new Dotenv();
+        $dotenv->load(__DIR__ . '/../.env');
     }
 }

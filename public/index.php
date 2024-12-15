@@ -12,6 +12,7 @@ $request = Request::createFromGlobals();
 try {
     $response = $kernel->handle($request);
     $response->send();
-} catch (Exception $e) {
+} catch (Throwable $e) {
+    dd($e);
 }
 
