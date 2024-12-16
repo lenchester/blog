@@ -48,6 +48,7 @@ class Kernel extends HttpKernel
             parent::__construct($dispatcher, $controllerResolver, $requestStack, $argumentResolver);
         }
         catch (\Exception $e) {
+            //catch global exceptions
             echo $e->getMessage();
         }
     }

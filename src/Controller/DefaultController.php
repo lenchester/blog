@@ -9,13 +9,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 class DefaultController
 {
-    private $entityManager;
-
-    public function __construct(EntityManagerInterface $entityManager)
-    {
-        $this->entityManager = $entityManager;
-    }
-
     public function index(Request $request): Response
     {
         return new Response('<h1>Welcome to the Custom Framework using Symfony libraries!</h1>');
