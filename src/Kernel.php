@@ -3,6 +3,7 @@
 namespace App;
 
 use Monolog\Logger;
+use Symfony\Bundle\SecurityBundle\SecurityBundle;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
@@ -61,8 +62,13 @@ class Kernel extends HttpKernel
         $container = new ContainerBuilder();
         $container->setParameter('kernel.project_dir', dirname(__DIR__));
 
+        $securityBundle = new SecurityBundle();
+        $container->registerExtension($securityBundle->getContainerExtension());
+        $securityBundle->build($container);
+
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../config'));
         $loader->load('services.yaml');
+        $loader->load('security.yaml');
 
         $container->compile(true);
 
